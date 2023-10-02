@@ -50,7 +50,7 @@ func NewTask(status status, title, description string) Task {
 	return Task{TaskTitle: title, TaskDescription: description, Status: status}
 }
 
-func (t Task) getJson() []byte {
+func getJson(t []Task) []byte {
 	content, err := json.Marshal(t)
 	if err != nil {
 		fmt.Println(err)

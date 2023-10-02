@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
+	"os"
+
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -52,28 +56,61 @@ func (m *Model) Prev() {
 	}
 }
 
+// GetTasksFromFile for getting tasks
+func GetTasksFromFile() []Task {
+	content, err := os.ReadFile("tasks.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tasks := []Task{}
+	err = json.Unmarshal(content, &tasks)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tasks
+}
+
+// WriteTasksToFile for writing to file
+func (m Model) WriteTasksToFile() {
+	file, err := os.OpenFile("tasks.json", os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.Truncate(0)
+	file.Close()
+
+	tasks := []Task{}
+	for _, status := range [3]status{todo, inProgress, done} {
+		for _, listItem := range m.lists[status].Items() {
+			task := listItem.(Task)
+			tasks = append(tasks, task)
+		}
+	}
+	content := getJson(tasks)
+	os.WriteFile("tasks.json", content, 0644)
+}
+
 func (m *Model) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height-10)
 	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
-	m.lists[todo].Title = " To Do"
-	m.lists[todo].SetItems(([]list.Item{
-		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "straw berry milk"},
-		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "banana milk"},
-		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "chocolate milk"},
-	}))
+	tasks := GetTasksFromFile()
+	m.lists[todo].Title = "To Do"
 	m.lists[inProgress].Title = "In Progress"
-	m.lists[inProgress].SetItems(([]list.Item{
-		Task{Status: inProgress, TaskTitle: "buy phone", TaskDescription: "straw berry milk"},
-		Task{Status: inProgress, TaskTitle: "buy laptop", TaskDescription: "banana milk"},
-		Task{Status: inProgress, TaskTitle: "buy bus", TaskDescription: "chocolate milk"},
-	}))
 	m.lists[done].Title = " Done"
-	m.lists[done].SetItems(([]list.Item{
-		Task{Status: done, TaskTitle: "buy cat", TaskDescription: "straw berry cat"},
-		Task{Status: done, TaskTitle: "buy dog", TaskDescription: "banana dog"},
-		Task{Status: done, TaskTitle: "buy cow", TaskDescription: "chocolate cow"},
-	}))
+
+	for _, task := range tasks {
+		switch task.Status {
+		case todo:
+			m.lists[todo].InsertItem(len(m.lists[todo].Items()), task)
+		case inProgress:
+			m.lists[inProgress].InsertItem(len(m.lists[inProgress].Items()), task)
+		case done:
+			m.lists[done].InsertItem(len(m.lists[done].Items()), task)
+		}
+	}
 }
 
 // NewMainModel func for tea
