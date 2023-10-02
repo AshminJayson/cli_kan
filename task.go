@@ -46,6 +46,14 @@ func (t *Task) Next() {
 	}
 }
 
+func (t *Task) Previous() {
+	if t.Status == todo {
+		t.Status = done
+	} else {
+		t.Status--
+	}
+}
+
 func NewTask(status status, title, description string) Task {
 	return Task{TaskTitle: title, TaskDescription: description, Status: status}
 }

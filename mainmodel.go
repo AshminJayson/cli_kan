@@ -64,6 +64,7 @@ func GetTasksFromFile() []Task {
 	}
 
 	tasks := []Task{}
+
 	err = json.Unmarshal(content, &tasks)
 	if err != nil {
 		log.Fatal(err)
@@ -96,6 +97,7 @@ func (m *Model) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height-10)
 	defaultList.SetShowHelp(false)
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
+
 	tasks := GetTasksFromFile()
 	m.lists[todo].Title = "To Do"
 	m.lists[inProgress].Title = "In Progress"
@@ -129,7 +131,21 @@ func (m *Model) MoveToNext() tea.Msg {
 	m.lists[selectedTask.Status].RemoveItem(m.lists[m.focused].Index())
 	selectedTask.Next()
 	m.lists[selectedTask.Status].InsertItem(len(m.lists[selectedTask.Status].Items())-1, list.Item(selectedTask))
-	return nil
+	return m
+}
+
+func (m *Model) MoveToPrevious() tea.Msg {
+	selectedItem := m.lists[m.focused].SelectedItem()
+	if selectedItem == nil {
+		return nil
+	}
+
+	selectedTask := selectedItem.(Task)
+	m.lists[selectedTask.Status].RemoveItem(m.lists[m.focused].Index())
+	selectedTask.Previous()
+	m.lists[selectedTask.Status].InsertItem(len(m.lists[selectedTask.Status].Items())-1, list.Item(selectedTask))
+	return m
+
 }
 
 // DeleteTask that is currently selected
@@ -162,6 +178,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.initLists(msg.Width, msg.Height)
 			m.loaded = true
 		}
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
@@ -173,18 +190,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Next()
 		case "enter":
 			return m, m.MoveToNext
+		case "backspace":
+			return m, m.MoveToPrevious
 		case "delete":
 			return m, m.DeleteTask
 		case "n":
 			models[mainModel] = m
 			models[form] = NewForm(m.focused)
 			return models[form].Update(nil)
-
 		}
 	case Task:
 		task := msg
 		return m, m.lists[task.Status].InsertItem(len(m.lists[task.Status].Items()), task)
 	}
+
 	var cmd tea.Cmd
 	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg)
 	return m, cmd
