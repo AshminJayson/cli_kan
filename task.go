@@ -1,5 +1,10 @@
 package main
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // Task Item Interface
 
 type status int
@@ -12,35 +17,44 @@ const (
 
 // Task data model
 type Task struct {
-	status      status
-	title       string
-	description string
+	Status          status
+	TaskTitle       string
+	TaskDescription string
 }
 
 // FilterValue in task
 func (t Task) FilterValue() string {
-	return t.title
+	return t.TaskTitle
 }
 
 // Title of task
 func (t Task) Title() string {
-	return t.title
+	return t.TaskTitle
 }
 
 // Description of task
 func (t Task) Description() string {
-	return t.description
+	return t.TaskDescription
 }
 
 // Next Task
 func (t *Task) Next() {
-	if t.status == done {
-		t.status = todo
+	if t.Status == done {
+		t.Status = todo
 	} else {
-		t.status++
+		t.Status++
 	}
 }
 
 func NewTask(status status, title, description string) Task {
-	return Task{title: title, description: description, status: status}
+	return Task{TaskTitle: title, TaskDescription: description, Status: status}
+}
+
+func (t Task) getJson() []byte {
+	content, err := json.Marshal(t)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(content))
+	return content
 }

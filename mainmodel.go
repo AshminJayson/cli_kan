@@ -58,21 +58,21 @@ func (m *Model) initLists(width, height int) {
 	m.lists = []list.Model{defaultList, defaultList, defaultList}
 	m.lists[todo].Title = " To Do"
 	m.lists[todo].SetItems(([]list.Item{
-		Task{status: todo, title: "buy milk", description: "straw berry milk"},
-		Task{status: todo, title: "buy milk", description: "banana milk"},
-		Task{status: todo, title: "buy milk", description: "chocolate milk"},
+		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "straw berry milk"},
+		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "banana milk"},
+		Task{Status: todo, TaskTitle: "buy milk", TaskDescription: "chocolate milk"},
 	}))
 	m.lists[inProgress].Title = "In Progress"
 	m.lists[inProgress].SetItems(([]list.Item{
-		Task{status: inProgress, title: "buy phone", description: "straw berry milk"},
-		Task{status: inProgress, title: "buy laptop", description: "banana milk"},
-		Task{status: inProgress, title: "buy bus", description: "chocolate milk"},
+		Task{Status: inProgress, TaskTitle: "buy phone", TaskDescription: "straw berry milk"},
+		Task{Status: inProgress, TaskTitle: "buy laptop", TaskDescription: "banana milk"},
+		Task{Status: inProgress, TaskTitle: "buy bus", TaskDescription: "chocolate milk"},
 	}))
 	m.lists[done].Title = " Done"
 	m.lists[done].SetItems(([]list.Item{
-		Task{status: done, title: "buy cat", description: "straw berry cat"},
-		Task{status: done, title: "buy dog", description: "banana dog"},
-		Task{status: done, title: "buy cow", description: "chocolate cow"},
+		Task{Status: done, TaskTitle: "buy cat", TaskDescription: "straw berry cat"},
+		Task{Status: done, TaskTitle: "buy dog", TaskDescription: "banana dog"},
+		Task{Status: done, TaskTitle: "buy cow", TaskDescription: "chocolate cow"},
 	}))
 }
 
@@ -89,9 +89,9 @@ func (m *Model) MoveToNext() tea.Msg {
 		return nil
 	}
 	selectedTask := selectedItem.(Task)
-	m.lists[selectedTask.status].RemoveItem(m.lists[m.focused].Index())
+	m.lists[selectedTask.Status].RemoveItem(m.lists[m.focused].Index())
 	selectedTask.Next()
-	m.lists[selectedTask.status].InsertItem(len(m.lists[selectedTask.status].Items())-1, list.Item(selectedTask))
+	m.lists[selectedTask.Status].InsertItem(len(m.lists[selectedTask.Status].Items())-1, list.Item(selectedTask))
 	return nil
 }
 
@@ -103,7 +103,7 @@ func (m *Model) DeleteTask() tea.Msg {
 	}
 
 	selectedTask := selectedItem.(Task)
-	m.lists[selectedTask.status].RemoveItem(m.lists[m.focused].Index())
+	m.lists[selectedTask.Status].RemoveItem(m.lists[m.focused].Index())
 	return nil
 
 }
@@ -143,7 +143,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case Task:
 		task := msg
-		return m, m.lists[task.status].InsertItem(len(m.lists[task.status].Items()), task)
+		return m, m.lists[task.Status].InsertItem(len(m.lists[task.Status].Items()), task)
 	}
 	var cmd tea.Cmd
 	m.lists[m.focused], cmd = m.lists[m.focused].Update(msg)
