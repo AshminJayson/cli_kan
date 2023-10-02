@@ -152,6 +152,9 @@ func (m Model) Init() tea.Cmd {
 
 // Update func for tea
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if m.loaded {
+		m.WriteTasksToFile()
+	}
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		if !m.loaded {

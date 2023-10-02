@@ -55,6 +55,5 @@ func getJson(t []Task) []byte {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(content))
 	return content
 }
