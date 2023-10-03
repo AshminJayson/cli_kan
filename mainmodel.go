@@ -106,10 +106,23 @@ func (m Model) WriteTasksToFile() {
 	os.WriteFile(Home+"\\tasks.json", content, 0644)
 }
 
+func doneListDelegate() list.DefaultDelegate {
+	d := list.NewDefaultDelegate()
+
+	d.Styles.NormalDesc.Strikethrough(true)
+	d.Styles.SelectedDesc.Strikethrough(true)
+	d.Styles.NormalTitle.Strikethrough(true)
+	d.Styles.SelectedTitle.Strikethrough(true)
+
+	return d
+}
+
 func (m *Model) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height-10)
+	doneList := list.New([]list.Item{}, doneListDelegate(), width/divisor, height-10)
 	defaultList.SetShowHelp(false)
-	m.lists = []list.Model{defaultList, defaultList, defaultList}
+	doneList.SetShowHelp(false)
+	m.lists = []list.Model{defaultList, defaultList, doneList}
 
 	tasks := GetTasksFromFile()
 	m.lists[todo].Title = "To Do"
