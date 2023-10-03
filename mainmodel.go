@@ -56,20 +56,25 @@ func (m *Model) Prev() {
 	}
 }
 
+func CreateTaskFile() {
+	Home, _ := os.UserHomeDir()
+	f, err := os.Create(Home + "\\tasks.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f.Write([]byte("[]"))
+	f.Close()
+}
+
 // GetTasksFromFile for getting tasks
 func GetTasksFromFile() []Task {
 	Home, _ := os.UserHomeDir()
 	_, err := os.Stat(Home + "\\tasks.json")
 	if err != nil {
-		f, err := os.Create(Home + "\\tasks.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		f.Write([]byte("[]"))
-
+		CreateTaskFile()
 	}
-	content, err := os.ReadFile("tasks.json")
+	content, err := os.ReadFile(Home + "\\tasks.json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -86,13 +91,7 @@ func GetTasksFromFile() []Task {
 
 // WriteTasksToFile for writing to file
 func (m Model) WriteTasksToFile() {
-	Home, _ := os.UserHomeDir()
-	file, err := os.Create(Home + "\\tasks.json")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	file.Close()
+	CreateTaskFile()
 
 	tasks := []Task{}
 	for _, status := range [3]status{todo, inProgress, done} {
@@ -102,7 +101,9 @@ func (m Model) WriteTasksToFile() {
 		}
 	}
 	content := getJson(tasks)
-	os.WriteFile("tasks.json", content, 0644)
+	Home, _ := os.UserHomeDir()
+
+	os.WriteFile(Home+"\\tasks.json", content, 0644)
 }
 
 func (m *Model) initLists(width, height int) {
