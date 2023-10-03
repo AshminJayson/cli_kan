@@ -49,6 +49,14 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				models[form] = m
 				return models[mainModel], m.CreateTask
+			case "esc":
+				if m.description.Focused() {
+					m.description.Blur()
+					m.title.Focus()
+					return m, textinput.Blink
+				}
+
+				return models[mainModel], nil
 			}
 		}
 	}
