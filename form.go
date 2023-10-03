@@ -1,10 +1,16 @@
 package main
 
 import (
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+)
+
+const (
+	create int = iota
+	edit
 )
 
 // Form Model
@@ -12,13 +18,21 @@ type Form struct {
 	focused     status
 	title       textinput.Model
 	description textarea.Model
+	operation   int
 }
 
-func NewForm(focused status) *Form {
-	form := &Form{focused: focused}
+func NewForm(focused status, listitem list.Item) *Form {
+	form := &Form{focused: focused, operation: create}
 	form.title = textinput.New()
 	form.title.Focus()
 	form.description = textarea.New()
+
+	if listitem != nil {
+		form.operation = edit
+		task := listitem.(Task)
+		form.title.SetValue(task.TaskTitle)
+		form.description.SetValue(task.TaskDescription)
+	}
 	return form
 }
 
@@ -56,6 +70,9 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, textinput.Blink
 				}
 
+				if m.operation == edit {
+					return models[mainModel], m.CreateTask
+				}
 				return models[mainModel], nil
 			}
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	models = []tea.Model{NewMainModel(), NewForm(todo)}
+	models = []tea.Model{NewMainModel(), NewForm(todo, nil)}
 	m := models[mainModel]
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {

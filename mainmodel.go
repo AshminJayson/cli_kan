@@ -170,7 +170,7 @@ func (m *Model) DeleteTask() tea.Msg {
 
 	selectedTask := selectedItem.(Task)
 	m.lists[selectedTask.Status].RemoveItem(m.lists[m.focused].Index())
-	return nil
+	return m
 
 }
 
@@ -209,8 +209,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.DeleteTask
 		case "n":
 			models[mainModel] = m
-			models[form] = NewForm(m.focused)
+			models[form] = NewForm(m.focused, nil)
 			return models[form].Update(nil)
+		case "e":
+			models[mainModel] = m
+			models[form] = NewForm(m.focused, m.lists[m.focused].SelectedItem())
+			m.DeleteTask()
+			return models[form].Update(tea.KeyDelete)
 		}
 	case Task:
 		task := msg
