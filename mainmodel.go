@@ -34,7 +34,7 @@ const (
 
 var (
 	columnStyle  = lipgloss.NewStyle().Padding(1, 2)
-	focusedStyle = lipgloss.NewStyle().Padding(1, 2).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("62"))
+	focusedStyle = lipgloss.NewStyle().Padding(1, 2).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("6"))
 	helpStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
 )
 
@@ -110,15 +110,22 @@ func doneListDelegate() list.DefaultDelegate {
 	d := list.NewDefaultDelegate()
 
 	d.Styles.NormalDesc.Strikethrough(true)
+	d.Styles.NormalDesc.Foreground(lipgloss.Color("8"))
 	d.Styles.SelectedDesc.Strikethrough(true)
+	d.Styles.SelectedDesc.Foreground(lipgloss.Color("8"))
 	d.Styles.NormalTitle.Strikethrough(true)
+	d.Styles.NormalTitle.Foreground(lipgloss.Color("8"))
 	d.Styles.SelectedTitle.Strikethrough(true)
+	d.Styles.SelectedTitle.Foreground(lipgloss.Color("8"))
 
 	return d
 }
 
 func (m *Model) initLists(width, height int) {
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), width/divisor, height-10)
+	defaultList.Styles.Title.Foreground(lipgloss.Color("0"))
+	defaultList.Styles.Title.Background(lipgloss.Color("10"))
+
 	doneList := list.New([]list.Item{}, doneListDelegate(), width/divisor, height-10)
 	defaultList.SetShowHelp(false)
 	doneList.SetShowHelp(false)

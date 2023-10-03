@@ -25,7 +25,10 @@ func NewForm(focused status, listitem list.Item) *Form {
 	form := &Form{focused: focused, operation: create}
 	form.title = textinput.New()
 	form.title.Focus()
-	form.description = textarea.New()
+	ta := textarea.New()
+	ta.Prompt = "| "
+	ta.ShowLineNumbers = false
+	form.description = ta
 
 	if listitem != nil {
 		form.operation = edit
@@ -33,6 +36,7 @@ func NewForm(focused status, listitem list.Item) *Form {
 		form.title.SetValue(task.TaskTitle)
 		form.description.SetValue(task.TaskDescription)
 	}
+
 	return form
 }
 
