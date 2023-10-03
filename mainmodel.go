@@ -58,6 +58,17 @@ func (m *Model) Prev() {
 
 // GetTasksFromFile for getting tasks
 func GetTasksFromFile() []Task {
+	Home, _ := os.UserHomeDir()
+	_, err := os.Stat(Home + "\\tasks.json")
+	if err != nil {
+		f, err := os.Create(Home + "\\tasks.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		f.Write([]byte("[]"))
+
+	}
 	content, err := os.ReadFile("tasks.json")
 	if err != nil {
 		log.Fatal(err)
@@ -75,11 +86,12 @@ func GetTasksFromFile() []Task {
 
 // WriteTasksToFile for writing to file
 func (m Model) WriteTasksToFile() {
-	file, err := os.OpenFile("tasks.json", os.O_RDWR, 0666)
+	Home, _ := os.UserHomeDir()
+	file, err := os.Create(Home + "\\tasks.json")
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	file.Truncate(0)
 	file.Close()
 
 	tasks := []Task{}

@@ -45,10 +45,10 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.title.Blur()
 					m.description.Focus()
 					return m, textarea.Blink
-				} else {
-					models[form] = m
-					return models[mainModel], m.CreateTask
 				}
+
+				models[form] = m
+				return models[mainModel], m.CreateTask
 			}
 		}
 	}
@@ -56,10 +56,11 @@ func (m Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.title.Focused() {
 		m.title, cmd = m.title.Update(msg)
 		return m, cmd
-	} else {
-		m.description, cmd = m.description.Update(msg)
-		return m, cmd
 	}
+
+	m.description, cmd = m.description.Update(msg)
+	return m, cmd
+
 }
 
 func (m Form) View() string {

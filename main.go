@@ -1,9 +1,8 @@
 package main
 
 import (
-	"log"
-
 	tea "github.com/charmbracelet/bubbletea"
+	"log"
 )
 
 func main() {
